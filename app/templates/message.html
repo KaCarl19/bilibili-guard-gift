@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="wrap">
+  <div class="card" style="text-align:center;padding:36px 20px">
+    <div style="font-size:42px">{{ "✅" if ok else "⚠️" }}</div>
+    <h1>{{ title }}</h1>
+    <p>{{ msg }}</p>
+  </div>
+</div>
+{% endblock %}

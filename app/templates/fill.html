@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="wrap">
+  <div class="card">
+    <h1>舰长礼物收货信息</h1>
+    <div class="muted">{{ streamer }} 的直播间 · 感谢上舰！</div>
+    <p style="margin:12px 0 0">
+      你的身份：<span class="lv">{{ guard.guard_level or "舰长" }}</span>
+      {% if guard.bili_name %}（{{ guard.bili_name }}）{% endif %}
+      <br><span class="muted">上舰日期 {{ guard.start_date }}</span>
+    </p>
+  </div>
+  <form class="card" method="post" action="/fill">
+    {% for e in errors %}<div class="err">{{ e }}</div>{% endfor %}
+    {% if draft %}<div class="err" style="background:#fff6e0;color:#a76a00">已根据你在QQ里发的内容预填，请仔细核对后保存。</div>{% endif %}
+    {% if addr.updated_at %}<div class="muted">已填写过（{{ addr.updated_at }}），修改后提交即可覆盖。</div>{% endif %}
+    <input type="hidden" name="t" value="{{ t }}">
+    <label for="receiver">收件人姓名</label>
+    <input id="receiver" name="receiver" maxlength="20" required value="{{ addr.receiver or '' }}">
+    <label for="phone">手机号</label>
+    <input id="phone" name="phone" inputmode="numeric" maxlength="13" required value="{{ addr.phone or '' }}">
+    <label for="address">收货地址</label>
+    <textarea id="address" name="address" maxlength="200" required placeholder="省 / 市 / 区 + 街道门牌号">{{ addr.address or '' }}</textarea>
+    <button class="full" type="submit">保存</button>
+    <p class="muted" style="margin-bottom:0">信息仅用于寄送舰长礼物，只有主播可见。</p>
+  </form>
+</div>
+{% endblock %}

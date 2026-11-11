@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}舰长后台 · {{ month }}{% endblock %}
+{% block body %}
+{% set back = "/admin?month=" ~ month ~ "&status=" ~ status %}
+<div class="wrap wide">
+  <div class="card" style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between">
+    <div>
+      <h1>舰长礼物后台</h1>
+      <div class="muted">{{ streamer }} · 共 {{ stat.total }} 条 · 已验证 {{ stat.verified }} · 待审核 {{ stat.pending }} · 已验证未填地址 {{ stat.no_addr }}</div>
+    </div>
+    <form method="get" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+      <select name="month" style="width:auto">
+        {% for m in months %}<option value="{{ m }}" {% if m == month %}selected{% endif %}>{{ m }}</option>{% endfor %}
+        <option value="all" {% if month == "all" %}selected{% endif %}>全部月份</option>
+      </select>
+      <select name="status" style="width:auto">
+        <option value="">全部状态</option>
+        {% for k, v in status_cn.items() %}<option value="{{ k }}" {% if k == status %}selected{% endif %}>{{ v }}</option>{% endfor %}
+      </select>
+      <button class="sec" type="submit">筛选</button>
+      <a class="btn" href="/admin/export.csv?month={{ month }}">导出发货表</a>
+    </form>
+  </div>
+
+  <div class="card" style="overflow-x:auto">
+    <table>
+      <thead><tr>
+        <th>上舰日期</th><th>状态</th><th>等级</th><th>B站昵称 / UID</th><th>QQ</th>
+        <th>收件人</th><th>手机号</th><th>地址</th><th>截图</th><th>操作</th>
+      </tr></thead>
+      <tbody>
+      {% for r in rows %}
+        <tr>
+          <td>{{ r.start_date }}</td>
+          <td><span class="tag {{ r.status }}">{{ status_cn[r.status] }}</span>
+              {% if r.shipped %}<br><span class="tag">已发货</span>{% endif %}
+              {% if r.note %}<div class="muted" style="max-width:160px">{{ r.note }}</div>{% endif %}</td>
+          <td class="lv">{{ r.guard_level or "" }}</td>
+          <td>{{ r.bili_name or "-" }}<br><span class="muted">{{ r.bili_uid or "" }}</span></td>
+          <td>{{ r.qq }}</td>
+          <td>{{ r.receiver or "" }}</td>
+          <td>{{ r.phone or "" }}</td>
+          <td style="min-width:200px">{{ r.address or "" }}
+            {% if not r.address and r.status == "verified" %}<span class="tag pending">未填写</span>{% endif %}
+            <details><summary class="muted">代填/修改</summary>
+              <form method="post" action="/admin/address">
+                <input type="hidden" name="qq" value="{{ r.qq }}"><input type="hidden" name="back" value="{{ back }}">
+                <input name="receiver" placeholder="收件人" value="{{ r.receiver or '' }}" required>
+                <input name="phone" placeholder="手机号" value="{{ r.phone or '' }}" required>
+                <textarea name="address" placeholder="地址" required>{{ r.address or '' }}</textarea>
+                <button class="sm" type="submit">保存</button>
+              </form>
+            </details>
+          </td>
+          <td>{% if r.screenshot %}<a href="/admin/shot/{{ r.screenshot }}" target="_blank">查看</a>{% endif %}</td>
+          <td style="white-space:nowrap">
+            <form method="post" action="/admin/guard/{{ r.id }}" style="display:flex;flex-direction:column;gap:4px">
+              <input type="hidden" name="back" value="{{ back }}">
+              {% if r.status != "verified" %}<button class="sm ok" name="action" value="approve">通过</button>{% endif %}
+              {% if r.status != "rejected" %}<button class="sm bad" name="action" value="reject">拒绝</button>{% endif %}
+              {% if r.status == "verified" %}
+                {% if r.shipped %}<button class="sm sec" name="action" value="unship">取消发货</button>
+                {% else %}<button class="sm sec" name="action" value="ship">标记已发货</button>{% endif %}
+              {% endif %}
+              <button class="sm sec" name="action" value="delete" onclick="return confirm('确定删除这条记录？')">删除</button>
+            </form>
+          </td>
+        </tr>
+      {% else %}
+        <tr><td colspan="10" class="muted" style="text-align:center;padding:24px">这个月还没有记录</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <form class="card" method="post" action="/admin/add">
+    <h2>手动添加舰长</h2>
+    <div class="muted">适用于没进群或识别失败的观众。添加后对方私聊机器人发送「填地址」即可填写。</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-top:12px">
+      <input name="qq" placeholder="QQ号" required>
+      <input name="bili_name" placeholder="B站昵称">
+      <input name="bili_uid" placeholder="B站UID">
+      <select name="guard_level"><option>舰长</option><option>提督</option><option>总督</option></select>
+      <input name="start_date" type="date" value="{{ today }}" required>
+      <button type="submit">添加</button>
+    </div>
+  </form>
+</div>
+<style>
+  table { border-collapse:collapse; width:100%; font-size:14px; }
+  th, td { text-align:left; padding:10px 8px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--muted); font-weight:600; white-space:nowrap; }
+  details form { display:flex; flex-direction:column; gap:4px; margin-top:6px; }
+  details input, details textarea { padding:6px 8px; font-size:13px; }
+</style>
+{% endblock %}

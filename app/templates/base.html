@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}{{ streamer }} 舰长礼物{% endblock %}</title>
+<style>
+  :root { --pink:#fb7299; --blue:#00a1d6; --bg:#f6f7f9; --card:#fff; --text:#18191c; --muted:#61666d; --line:#e3e5e7; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:15px/1.6 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif; }
+  .wrap { max-width:520px; margin:0 auto; padding:24px 16px; }
+  .wide { max-width:1280px; }
+  .card { background:var(--card); border-radius:12px; padding:20px; box-shadow:0 1px 3px rgba(0,0,0,.06); margin-bottom:16px; }
+  h1 { font-size:20px; margin:0 0 4px; }
+  h2 { font-size:16px; margin:0 0 12px; }
+  .muted { color:var(--muted); font-size:13px; }
+  label { display:block; font-weight:600; margin:14px 0 6px; }
+  input, textarea, select { width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:8px; font:inherit; background:#fff; }
+  input:focus, textarea:focus { outline:2px solid var(--pink); border-color:transparent; }
+  textarea { min-height:90px; resize:vertical; }
+  button, .btn { display:inline-block; border:0; border-radius:8px; padding:10px 18px; font:inherit; cursor:pointer;
+                 background:var(--pink); color:#fff; text-decoration:none; white-space:nowrap; }
+  button.full { width:100%; margin-top:20px; padding:12px; font-size:16px; }
+  .btn.sec, button.sec { background:#fff; color:var(--text); border:1px solid var(--line); }
+  button.sm, .btn.sm { padding:4px 10px; font-size:13px; }
+  button.ok { background:#2fb45a; } button.bad { background:#e5484d; }
+  .err { background:#fff1f0; color:#c62828; border-radius:8px; padding:10px 12px; margin-bottom:8px; }
+  .tag { display:inline-block; padding:1px 8px; border-radius:10px; font-size:12px; background:#eef; }
+  .tag.verified { background:#e6f7ec; color:#1a7f3c; } .tag.pending { background:#fff6e0; color:#a76a00; }
+  .tag.rejected { background:#fdecec; color:#c62828; }
+  .lv { color:var(--blue); font-weight:600; }
+</style>
+</head>
+<body>{% block body %}{% endblock %}</body>
+</html>
